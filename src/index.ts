@@ -67,6 +67,16 @@ app.get("/users", async (_req, res) => {
   }
 });
 
+app.get('/users/:id', async (req, res) => {
+  try {
+      const result = await pool.query('SELECT * FROM users WHERE id = $1', [req.params.id]);
+      res.json(result.rows[0]);
+  } catch (err) {
+      console.error(err);
+      res.status(500).send("database query failed");
+  }
+});
+
 app.listen(port, () => {
   console.log(`server running on port ${port}`);
 });
