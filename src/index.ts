@@ -27,6 +27,28 @@ app.get("/movies", async (_req, res) => {
   }
 });
 
+app.get("/movies/:id", async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM movies WHERE id = $1', [req.params.id]);
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("database query failed");
+  }
+});
+
+
+app.get("/users", async (_req, res) => {
+  const query_users = "SELECT users.*, occupations.name FROM users INNER JOIN occupations ON users.occupation_id = occupations.id"
+  try {
+    const result = await pool.query(query_users);
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("database query failed");
+  }
+});
+
 app.listen(port, () => {
   console.log(`server running on port ${port}`);
 });
