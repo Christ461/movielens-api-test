@@ -37,6 +37,24 @@ app.get("/movies/:id", async (req, res) => {
   }
 });
 
+app.post("/movies", async (req, res) => {
+  let body = ''
+
+  req.on('data', (chunk) => {
+    body += chunk.toString();
+  });
+
+  req.on('end', async () => {
+    const {id, title, release_date} = JSON.parse(body)
+    try {
+      const result = await pool.query('INSERT INTO MOVIES (id, title, release_date) VALUES ($1, $2, $3) RETURNING *',[id, title, release_date])
+      res.json(result.rows[0]);
+    } catch (err) {
+      console.error(err);
+      res.status(500).send("database query failed");
+    }
+  })
+});
 
 app.get("/users", async (_req, res) => {
   const query_users = "SELECT users.*, occupations.name FROM users INNER JOIN occupations ON users.occupation_id = occupations.id"
